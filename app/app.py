@@ -88,7 +88,11 @@ class PackageServer(SimpleHTTPRequestHandler):
         package_handler = PackageHandler(self.directory)
 
         if parsed_path.path.startswith('/simple/'):
-            package_name = parsed_path.path.split('/')[2].replace("-", "_")
+            path_parts = parsed_path.path.strip('/').split('/')
+
+        # Serve Package Listing
+        if len(path_parts) == 2:
+            package_name = path_parts[1].replace("-", "_")
             print(f"searching for:{package_name}")
             package_versions = package_handler.index.get(package_name)
 
@@ -116,6 +120,22 @@ class PackageServer(SimpleHTTPRequestHandler):
                 self.send_response(404)
                 self.end_headers()
                 self.wfile.write(b'No suitable package found')
+        # Serve Actual Package File
+        elif len(path_parts) == 3:
+            package_file = path_parts[2]
+            file_path = os.path.join(self.directory, package_file)
+            if os.path.isfile(file_path):
+                self.send_response(200)
+                self.send_header('Content-Type', guess_type(file_path)[0] or 'application/octet-stream')
+                self.send_header('Content-Length', str(os.path.getsize(file_path)))
+                self.end_headers()
+                with open(file_path, 'rb') as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_response(404)
+                self.end_headers()
+                self.wfile.write(b'File not found')
+
 
     def _extract_python_version(self, user_agent):
         """Extract Python version from the User-Agent header."""
