@@ -9,7 +9,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = "/packages"
 LISTEN_PORT = int(os.getenv("LISTEN_PORT", 8082))
 
-os.mkdir(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route("/")
 def index():
