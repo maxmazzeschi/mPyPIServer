@@ -6,12 +6,14 @@ import re
 app = Flask(__name__)
 
 # Load environment variables
-PACKAGE_FOLDER = os.getenv("PACKAGE_FOLDER", "/app/packages")
+UPLOAD_FOLDER = "/packages"
 LISTEN_PORT = int(os.getenv("LISTEN_PORT", 8082))
+
+os.mkdir(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route("/")
 def index():
-    return f"Serving packages from {PACKAGE_FOLDER} on port {LISTEN_PORT}"
+    return f"Serving packages from {UPLOAD_FOLDER} on port {LISTEN_PORT}"
 def normalize(name):
     return re.sub(r"[-_.]+", "-", name).lower()
 
