@@ -14,7 +14,5 @@ COPY . .
 EXPOSE 8082
 
 # Set environment variables for package folder and port
-ENV LISTEN_PORT=8082
-
 # Run the app using Gunicorn
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:${LISTEN_PORT}", "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8082", "app:app"]
