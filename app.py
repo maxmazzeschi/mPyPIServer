@@ -1,12 +1,17 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template_string
 import os
+from flask import Flask, request, jsonify, send_from_directory, render_template_string
 import re
 
 
 app = Flask(__name__)
-UPLOAD_FOLDER = "packages"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# Load environment variables
+PACKAGE_FOLDER = os.getenv("PACKAGE_FOLDER", "/app/packages")
+LISTEN_PORT = int(os.getenv("LISTEN_PORT", 8082))
+
+@app.route("/")
+def index():
+    return f"Serving packages from {PACKAGE_FOLDER} on port {LISTEN_PORT}"
 def normalize(name):
     return re.sub(r"[-_.]+", "-", name).lower()
 
@@ -68,4 +73,4 @@ def upload_via_twine():
     return jsonify({"message": "File uploaded successfully via Twine"}), 200
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8082)
+    app.run(host="0.0.0.0", port=LISTEN_PORT)
